@@ -18,6 +18,7 @@ bot.start((ctx) => {
 
 // ጨዋታ ሲጀመር (Web App ቁልፍ ያሳያል)
 bot.hears('🎮 ጨዋታ ጀምር (Play)', (ctx) => {
+    // የRender ሊንክህን እዚህ አስገባ
     ctx.reply('የቢንጎ ጨዋታውን ለመክፈት ከታች ያለውን ቁልፍ ተጫን፦', Markup.inlineKeyboard([
         Markup.button.webApp('🎰 ቢንጎ ክፈት', 'https://trustbingo2.onrender.com/game.html')
     ]));
