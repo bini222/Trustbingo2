@@ -2,9 +2,9 @@ const { Telegraf, Markup } = require('telegraf');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+// ⚠️ የቴሌግራም ቶከንህን እዚህ አስገባ (በነጠላ ምልክት መካከል)
+const bot = new Telegraf('9196660811:AAFIFMk1vALClu64UHWEfJ-vvPSKePzHgFU');
 
 // ዋና ምናሌ ቁልፎች
 const mainMenu = Markup.keyboard([
@@ -18,7 +18,7 @@ bot.start((ctx) => {
 
 // ጨዋታ ሲጀመር (Web App ቁልፍ ያሳያል)
 bot.hears('🎮 ጨዋታ ጀምር (Play)', (ctx) => {
-    // የRender ሊንክህን እዚህ አስገባ
+    // የአንተን Render ሊንክ እዚህ አስገባ
     ctx.reply('የቢንጎ ጨዋታውን ለመክፈት ከታች ያለውን ቁልፍ ተጫን፦', Markup.inlineKeyboard([
         Markup.button.webApp('🎰 ቢንጎ ክፈት', 'https://trustbingo2.onrender.com/game.html')
     ]));
