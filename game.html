@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Bingo</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f3e5f5; margin: 0; padding: 10px; text-align: center; }
+        .header { background-color: #8e24aa; color: white; padding: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .wallet-info { background-color: white; color: #333; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+        .bingo-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px auto; max-width: 350px; }
+        .bingo-cell { background-color: #e1bee7; padding: 15px 5px; border-radius: 5px; font-size: 18px; font-weight: bold; color: #4a148c; }
+        .bingo-cell.marked { background-color: #ff9800; color: white; }
+        .bingo-cell.free { background-color: #4caf50; color: white; font-size: 14px; }
+        .controls { margin-top: 20px; }
+        button { background-color: #8e24aa; color: white; border: none; padding: 12px 24px; border-radius: 5px; font-size: 16px; cursor: pointer; width: 100%; max-width: 300px; }
+        button:disabled { background-color: #b39ddb; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>Trust Bingo</div>
+        <div class="wallet-info">💰 100 ETB</div>
+    </div>
+    
+    <h2 id="status">የቢንጎ ካርድዎን ያግኙ!</h2>
+    
+    <div class="bingo-board" id="board">
+        <!-- ካርዱ በ JavaScript ይሞላል -->
+    </div>
+    
+    <div class="controls">
+        <button id="play-btn" onclick="startGame()">🎮 ጨዋታ ጀምር</button>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const playBtn = document.getElementById('play-btn');
+        
+        let currentNumbers = [];
+        let drawnNumbers = [];
+
+        function generateCard() {
+            board.innerHTML = '';
+            currentNumbers = [];
+            drawnNumbers = [];
+            
+            // 1-75 ቁጥሮችን ማዘጋጀት
+            let pool = Array.from({length: 75}, (_, i) => i + 1);
+            pool.sort(() => Math.random() - 0.5);
+            
+            let index = 0;
+            for (let r = 0; r < 5; r++) {
+                for (let c = 0; c < 5; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'bingo-cell';
+                    
+                    if (r === 2 && c === 2) {
+                        cell.textContent = 'FREE';
+                        cell.classList.add('free');
+                        cell.dataset.num = 'FREE';
+                    } else {
+                        const num = pool[index++];
+                        cell.textContent = num;
+                        cell.dataset.num = num;
+                        currentNumbers.push(num);
+                    }
+                    board.appendChild(cell);
+                }
+            }
+            status.textContent = "ቁጥሮች እየወጡ ነው...";
+            playBtn.disabled = true;
+            drawNext();
+        }
+
+        function drawNext() {
+            if (drawnNumbers.length >= 30) {
+                status.textContent = "ጨዋታው ተጠናቅቋል! እንደገና ለመጫወት ቁልፉን ተጫን።";
+                playBtn.disabled = false;
+                playBtn.textContent = "🔄 እንደገና ጫወት";
+                return;
+            }
+
+            let newNum;
+            do {
+                newNum = Math.floor(Math.random() * 75) + 1;
+            } while (drawnNumbers.includes(newNum));
+            
+            drawnNumbers.push(newNum);
+            
+            // ካርዱ ላይ ምልክት ማድረግ
+            const cells = document.querySelectorAll('.bingo-cell');
+            cells.forEach(cell => {
+                if (parseInt(cell.dataset.num) === newNum) {
+                    cell.classList.add('marked');
+                }
+            });
+
+            // የማሸነፍ ሁኔታን መፈተሽ
+            if (checkWin()) {
+                status.textContent = "🎉 አሸነፍክ! BINGO! 🎉";
+                playBtn.disabled = false;
+                playBtn.textContent = "🔄 እንደገና ጫወት";
+                return;
+            }
+            
+            setTimeout(drawNext, 1500); // በየ 1.5 ሰከንዱ አንድ ቁጥር
+        }
+
+        function checkWin() {
+            const cells = document.querySelectorAll('.bingo-cell');
+            const grid = [];
+            for (let i = 0; i < 5; i++) {
+                grid.push(cells.slice(i * 5, i * 5 + 5));
+            }
+            
+            // ረድፎችን መፈተሽ
+            for (let r = 0; r < 5; r++) {
+                if (grid[r].every(c => c.classList.contains('marked') || c.classList.contains('free'))) return true;
+            }
+            // አምዶችን መፈተሽ
+            for (let c = 0; c < 5; c++) {
+                if (grid.every(row => row[c].classList.contains('marked') || row[c].classList.contains('free'))) return true;
+            }
+            // ዲያጎናል መፈተሽ
+            if (grid.every((row, i) => row[i].classList.contains('marked') || row[i].classList.contains('free'))) return true;
+            if (grid.every((row, i) => row[4-i].classList.contains('marked') || row[4-i].classList.contains('free'))) return true;
+            
+            return false;
+        }
+
+        function startGame() {
+            generateCard();
+        }
+    </script>
+</body>
+</html>
